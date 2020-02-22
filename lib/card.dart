@@ -50,13 +50,48 @@ class _CardLayout1State extends State<CardLayout1> {
       break;
     
     default:
-      return formatter(datetime);
+      return hourFormatter(datetime);
+      break;
+
+    }
+
+  }
+
+   String hourCalculate(String datetime){
+    DateTime d1 = DateTime.now();
+    DateTime d2 = DateTime.parse(datetime);
+   
+    
+     var diff = d1.difference(d2);  //d2-d1
+     return ((diff.inHours).toString());
+  }
+
+  String hourFormatter(String datetime){
+     var hours = int.parse(hourCalculate(datetime));
+
+     switch(hours)
+    {
+    case 0:
+      return "Few minutes earlier";
+      break;
+    
+    case 1:
+      return "1 hour ago";
+      break;
+    
+    case 2:
+      return "2 hours ago";
+      break;
+    
+    default:
+      return dayFormatter(datetime);
       break;
 
     }
 
   }
   
+
 
   String dayCalculate(String datetime) {
     DateTime d1 = DateTime.now();
@@ -67,7 +102,7 @@ class _CardLayout1State extends State<CardLayout1> {
      return ((diff.inDays).toString());
   }
 
-  String formatter(String datetime){
+  String dayFormatter(String datetime){
     var days = int.parse(dayCalculate(datetime));
 
     switch(days)
