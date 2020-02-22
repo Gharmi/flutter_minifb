@@ -14,9 +14,6 @@ class CardLayout1 extends StatefulWidget {
       this.imageURL})
       : super(key: key);
 
-      //DateTime dt = DateTime.now();
-      
-
   @override
   _CardLayout1State createState() => _CardLayout1State();
 }
@@ -24,16 +21,52 @@ class CardLayout1 extends StatefulWidget {
 class _CardLayout1State extends State<CardLayout1> {
   int starCount = 5;
   bool starCheck = false;
+
+  String dayCalculate(String datetime) {
+    DateTime d1 = DateTime.now();
+    DateTime d2 = DateTime.parse(datetime);
+   
+    
+     var diff = d1.difference(d2);  //d2-d1
+     return ((diff.inDays).toString());
+  }
+
+  String formatter(String datetime){
+    var days = int.parse(dayCalculate(datetime));
+
+    switch(days)
+    {
+    case 0:
+      return "Today";
+      break;
+    
+    case 1:
+      return "Yesterday";
+      break;
+    
+    case 2:
+      return "2 days ago";
+      break;
+    
+    default:
+      return datetime;
+      break;
+    
+    
+  
+    }
+
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
         child: Card(
-
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0))),
       color: Colors.black26,
       child: SingleChildScrollView(
-
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -63,7 +96,7 @@ class _CardLayout1State extends State<CardLayout1> {
                           ),
                         ),
                         Text(
-                          widget.date.toString().toUpperCase(),
+                          formatter(widget.date.toString().toUpperCase()),
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 8.0,
@@ -82,9 +115,12 @@ class _CardLayout1State extends State<CardLayout1> {
             ),
             Container(
               padding: EdgeInsets.fromLTRB(20, 0, 0, 10),
-              child:Row(
+              child: Row(
                 children: <Widget>[
-                  Icon(Icons.location_on,color: Colors.blueGrey,),
+                  Icon(
+                    Icons.location_on,
+                    color: Colors.blueGrey,
+                  ),
                   Text(
                     widget.location,
                     style: TextStyle(
@@ -97,13 +133,13 @@ class _CardLayout1State extends State<CardLayout1> {
               ),
             ),
             Center(
-              
-                child: Container(margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  child:widget.imageURL != null
-                    ? Image.network(widget.imageURL)
-                    : SizedBox(
-                        height: 20,
-                      ))),
+                child: Container(
+                    margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                    child: widget.imageURL != null
+                        ? Image.network(widget.imageURL)
+                        : SizedBox(
+                            height: 20,
+                          ))),
             Divider(thickness: 7, height: 10),
             Container(
               //padding: EdgeInsets.fromLTRB(0, 5, 5, 0),
