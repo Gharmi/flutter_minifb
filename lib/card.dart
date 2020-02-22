@@ -22,6 +22,42 @@ class _CardLayout1State extends State<CardLayout1> {
   int starCount = 5;
   bool starCheck = false;
 
+
+  String minCalculate(String datetime){
+    DateTime d1 = DateTime.now();
+    DateTime d2 = DateTime.parse(datetime);
+   
+    
+     var diff = d1.difference(d2);  //d2-d1
+     return ((diff.inMinutes).toString());
+  }
+
+  String minFormatter(String datetime){
+     var minutes = int.parse(minCalculate(datetime));
+
+     switch(minutes)
+    {
+    case 0:
+      return "Just Now";
+      break;
+    
+    case 1:
+      return "1 min ago";
+      break;
+    
+    case 2:
+      return "2 mins ago";
+      break;
+    
+    default:
+      return formatter(datetime);
+      break;
+
+    }
+
+  }
+  
+
   String dayCalculate(String datetime) {
     DateTime d1 = DateTime.now();
     DateTime d2 = DateTime.parse(datetime);
@@ -51,9 +87,7 @@ class _CardLayout1State extends State<CardLayout1> {
     default:
       return datetime;
       break;
-    
-    
-  
+
     }
 
     
@@ -96,7 +130,7 @@ class _CardLayout1State extends State<CardLayout1> {
                           ),
                         ),
                         Text(
-                          formatter(widget.date.toString().toUpperCase()),
+                          minFormatter(widget.date.toString().toUpperCase()),
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 8.0,
