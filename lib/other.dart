@@ -1,7 +1,4 @@
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/material.dart';
-
-
 
   Future<bool> check() async {
     var connectivityResult = await (Connectivity().checkConnectivity());

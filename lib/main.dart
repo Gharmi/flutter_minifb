@@ -1,36 +1,36 @@
-import 'package:firebase_handler/theme_changer.dart';
+//import 'package:firebase_handler/theme_changer.dart';
+import 'package:firebase_handler/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'home.dart';
+//import 'package:auth/auth.dart';
 
 void main() => runApp(MyApp());
 
-var isDark = true;
+int mode =0;
 
 class MyApp extends StatelessWidget {
+  
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: isDark
-          ? ThemeData(
-              primarySwatch: Colors.blue,
-              brightness: Brightness.dark,
-            )
-          : ThemeData(
-              primarySwatch: Colors.blue,
-              brightness: Brightness.light,
-            ),
+      //initialRoute: '/home',
+      routes: <String, WidgetBuilder>{
+        //set routes for Navigation
+      },
+      theme:  mode==0?ThemeData.light():ThemeData.dark(),
+         
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key, @required this.title}) : super(key: key);
 
   final String title;
 
@@ -56,6 +56,17 @@ class DetailBox extends StatefulWidget {
 }
 
 class _DetailBoxState extends State<DetailBox> {
+  // @override
+  // void initState() {
+  //   if (account != null) {
+  //     Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //             builder: (context) => Home(googleSignIn: googleSignIn)));
+  //   }
+  //   super.initState();
+  // }
+
   GoogleSignIn googleSignIn = GoogleSignIn();
   GoogleSignInAccount account;
 
@@ -76,15 +87,14 @@ class _DetailBoxState extends State<DetailBox> {
       final AuthResult authResult =
           await _auth.signInWithCredential(credential);
       final FirebaseUser user = authResult.user;
-    
-        final FirebaseUser currentUser = await _auth.currentUser();
 
-     
+      final FirebaseUser currentUser = await _auth.currentUser();
 
       //can use currentUser in googleSIgnIn
       if (account != null) {
-        
+       
         print('Successfully signed...');
+        //UserData userData =UserData(account: account);
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -93,16 +103,16 @@ class _DetailBoxState extends State<DetailBox> {
         Navigator.pop(context);
       }
     } catch (err) {
-       void _showAlert(BuildContext context, String title, String msg) {
-          showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                    title: Text(title),
-                    content: Text(msg),
-                  ));
-        }
+      void _showAlert(BuildContext context, String title, String msg) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text(title),
+                  content: Text(msg),
+                ));
+      }
 
-        _showAlert(context, "Connection", "Network Error or timeout");
+      _showAlert(context, "Connection", "Network Error or timeout");
       print(err);
     }
   }

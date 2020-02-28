@@ -1,21 +1,26 @@
+import 'package:google_sign_in/google_sign_in.dart';
+
 class UserData {
-  String username, photourl, email;
+
+   GoogleSignInAccount account;
   
-  bool _isLoggedin;
-  
-  UserData(this.username, this.photourl, this.email, this._isLoggedin);
-  String getname() {
-    return username;
+   UserData({this.account});
+   
+
+
+
+   String getname() {
+    return account.displayName;
   }
 
-  String getphotourl() {
-    return photourl;
+   String getphotourl() {
+    return account.photoUrl;
   }
 
-  String getemail() {
-    return email;
+   String getemail() {
+    return account.email;
   }
-  bool getLog(){
-    return _isLoggedin;
+   String getdisplayName(){
+    return account.displayName;
   }
 }

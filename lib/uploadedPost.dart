@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_handler/card.dart';
+import 'package:firebase_handler/models/user.dart';
 import 'package:firebase_handler/other.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -20,18 +21,23 @@ import 'main.dart';
 
 class FirstPage extends StatefulWidget {
   final GoogleSignIn googleSignIn;
+  UserData userData;
   FirstPage({Key key, @required this.googleSignIn});
 
   @override
   _FirstPageState createState() =>
-      _FirstPageState(); //_FirstPageState(googleSignIn: googleSignIn)
+      _FirstPageState(googleSignIn: googleSignIn); //_FirstPageState(googleSignIn: googleSignIn)
 }
 
 class _FirstPageState extends State<FirstPage>
     with SingleTickerProviderStateMixin {
   //we can also access googleSign by constructor and by widgets too... as below
-  // final GoogleSignIn googleSignIn;
-  // _FirstPageState({this.googleSignIn});
+  final GoogleSignIn googleSignIn;
+  //_FirstPageState({this.googleSignIn});
+
+  //final UserData userData;
+
+  _FirstPageState( {this.googleSignIn});
 
   File _image;
   String _basename;
@@ -44,8 +50,7 @@ class _FirstPageState extends State<FirstPage>
   ScrollController scrollController = ScrollController();
   //bool starCheck = true;
   bool postDisable = false;
-  //Future<File> _futureImage;
-  //int starCount = 5;
+
 
   //Animation fabButtonanim;
   //AnimationController controller;
@@ -92,7 +97,7 @@ class _FirstPageState extends State<FirstPage>
   }
 
   Future<void> storeFirebase() async {
-    print(widget.googleSignIn.currentUser.id);
+   // print(userData.getname());
 
     FocusScope.of(context).requestFocus(new FocusNode());
     check().then((internet) async {
@@ -141,12 +146,13 @@ class _FirstPageState extends State<FirstPage>
 
             await _firestore.collection('events').add({
               'title': taskTitleInputController.text,
-              'from': widget.googleSignIn.currentUser.email,
+              //'from': widget.googleSignIn.currentUser.email,
               'location': locationController.text,
               'date': DateTime.now().toIso8601String().toString(),
               'imageURL': _uploadUrl,
-              'userName': widget.googleSignIn.currentUser.displayName,
-              'prflurl': widget.googleSignIn.currentUser.photoUrl,
+              'userName': googleSignIn.currentUser.displayName,
+              'prflurl': googleSignIn.currentUser.photoUrl,
+              'likes':0,
             });
 
             Scaffold.of(context).showSnackBar(SnackBar(
@@ -166,13 +172,13 @@ class _FirstPageState extends State<FirstPage>
             print('events data');
             await _firestore.collection('events').add({
               'title': taskTitleInputController.text,
-              'from': widget.googleSignIn.currentUser.email,
+              'from': googleSignIn.currentUser.email,
               'location': locationController.text,
               'date': DateTime.now().toIso8601String().toString(),
               'imageURL': null,
 
-              'userName': widget.googleSignIn.currentUser.displayName,
-              'prflurl': widget.googleSignIn.currentUser.photoUrl,
+              'userName': googleSignIn.currentUser.displayName,
+              'prflurl': googleSignIn.currentUser.photoUrl,
               //'uploader': widget.googleSignIn.currentUser
             });
             setState(() {
@@ -214,16 +220,17 @@ class _FirstPageState extends State<FirstPage>
 
   @override
   Widget build(BuildContext context) {
-    //final devHeight = MediaQuery.of(context).size.height;
+    final devHeight = MediaQuery.of(context).size.height;
     return SingleChildScrollView(
+  
         //padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
         child: Column(children: <Widget>[
       Container(
-        height: 100,
+        height: devHeight/10,
         padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: TextField(
           autofocus: false,
-          scrollPadding: EdgeInsets.all(10),
+          //scrollPadding: EdgeInsets.all(5.0),
           maxLines: 2,
           decoration: InputDecoration(
             labelText: 'What\'s on your mind ?',
@@ -242,7 +249,7 @@ class _FirstPageState extends State<FirstPage>
         padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: TextField(
           autofocus: false,
-          //scrollPadding: EdgeInsets.all(10),
+          scrollPadding: EdgeInsets.all(10),
           //onChanged: ((value) => (print(value))),
           decoration: InputDecoration(
             hintText: "Enter the location",
@@ -303,7 +310,7 @@ class _FirstPageState extends State<FirstPage>
       Container(
         height: double.maxFinite,
         child: StreamBuilder<QuerySnapshot>(
-          stream: _firestore.collection('events').snapshots(),
+          stream: _firestore.collection('events').orderBy('date', descending:true).snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData)
               return Center(
@@ -311,13 +318,16 @@ class _FirstPageState extends State<FirstPage>
               );
 
             List<DocumentSnapshot> docs = snapshot.data.documents;
+            
 
             List<Widget> events = docs
                 .map((doc) => CardLayout1(
+                      id: doc.documentID,
                       photourl: doc.data['prflurl'],
                       displayName: doc.data['userName'],
                       title: doc.data['title'],
                       location: doc.data['location'],
+                      likes: doc.data['likes'],
                       date: doc.data['date'],
                       imageURL: doc.data['imageURL'],
                     ))

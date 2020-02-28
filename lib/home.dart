@@ -1,4 +1,5 @@
 import 'package:firebase_handler/main.dart';
+import 'package:firebase_handler/models/user.dart';
 import 'package:firebase_handler/theme_changer.dart';
 import 'package:firebase_handler/uploadedPost.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'main.dart';
 
 class Home extends StatefulWidget {
   final GoogleSignIn googleSignIn;
+  //final UserData userData;
 
   Home({Key key, @required this.googleSignIn});
 
@@ -18,23 +20,27 @@ class Home extends StatefulWidget {
 }
 
 class HomePage extends State<Home> {
-  final GoogleSignIn googleSignIn;
+  GoogleSignIn googleSignIn;
+  //final UserData userData;
 
-  HomePage({this.googleSignIn});
+  HomePage( {this.googleSignIn});
 
   int pos = 0;
 
   Widget getWidget(BuildContext context, int pos) {
     switch (pos) {
       case 0:
+         FocusScope.of(context).requestFocus(new FocusNode());
         return FirstPage(googleSignIn: googleSignIn);
         break;
 
       case 1:
-        return SecondPage();
+         FocusScope.of(context).requestFocus(new FocusNode());
+        return SecondPage(googleSignIn: googleSignIn);
         break;
 
       default:
+        FocusScope.of(context).requestFocus(new FocusNode());
         return FirstPage(googleSignIn: googleSignIn);
         break;
     }
@@ -45,7 +51,7 @@ class HomePage extends State<Home> {
     return Container(
         child: new Scaffold(
       appBar: AppBar(
-        title: Text('News Feed'),
+        title: pos==0?Text('News Feed'):Text('My Posts'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.close),
@@ -96,7 +102,10 @@ class HomePage extends State<Home> {
               ),
               ListTile(
                 leading: Icon(Icons.image_aspect_ratio),
-                title: Text('Uploaded Posts'),
+                title: Text(
+                  'News Feed',
+                  style: pos == 0 ? TextStyle(color: Colors.blue) : null,
+                ),
                 onTap: () {
                   setState(() => pos = 0);
                   Navigator.pop(context);
@@ -108,7 +117,10 @@ class HomePage extends State<Home> {
               ),
               ListTile(
                 leading: Icon(Icons.image),
-                title: Text('News Feed'),
+                title: Text(
+                  'Uploaded Posts',
+                  style: pos == 1 ? TextStyle(color: Colors.blue) : null,
+                ),
                 onTap: () {
                   setState(() => pos = 1);
                   Navigator.pop(context);
@@ -152,6 +164,7 @@ class HomePage extends State<Home> {
                     value: false,
                     onChanged: (changedTheme) {
                       setState(() {
+                        mode==0?mode=1:mode=0;
                         changedTheme = !changedTheme;
                       });
                     },
