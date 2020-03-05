@@ -1,4 +1,4 @@
-import 'dart:developer';
+//import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 
@@ -15,7 +15,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:random_string/random_string.dart';
 import 'dart:math' show Random;
 
-
 import 'other.dart';
 import 'main.dart';
 
@@ -25,8 +24,8 @@ class FirstPage extends StatefulWidget {
   FirstPage({Key key, @required this.googleSignIn});
 
   @override
-  _FirstPageState createState() =>
-      _FirstPageState(googleSignIn: googleSignIn); //_FirstPageState(googleSignIn: googleSignIn)
+  _FirstPageState createState() => _FirstPageState(
+      googleSignIn: googleSignIn); //_FirstPageState(googleSignIn: googleSignIn)
 }
 
 class _FirstPageState extends State<FirstPage>
@@ -37,7 +36,7 @@ class _FirstPageState extends State<FirstPage>
 
   //final UserData userData;
 
-  _FirstPageState( {this.googleSignIn});
+  _FirstPageState({this.googleSignIn});
 
   File _image;
   String _basename;
@@ -50,7 +49,6 @@ class _FirstPageState extends State<FirstPage>
   ScrollController scrollController = ScrollController();
   //bool starCheck = true;
   bool postDisable = false;
-
 
   //Animation fabButtonanim;
   //AnimationController controller;
@@ -71,10 +69,10 @@ class _FirstPageState extends State<FirstPage>
     print("FILE SIZE BEFORE: " + image.lengthSync().toString());
     String basename = (image.path).split("/")?.last;
     print(image.path);
-    
+
     var dir = await getApplicationDocumentsDirectory();
     print(dir.path);
-  
+
     File compressedImage = await FlutterImageCompress.compressAndGetFile(
       image.path,
       '${dir.path}/$randomString.jpg',
@@ -82,22 +80,19 @@ class _FirstPageState extends State<FirstPage>
     );
     _image = compressedImage;
     print(randomString(4));
-   
-   
-
 
     print("FILE SIZE After : " + _image.lengthSync().toString());
 
     setState(() {
       print(basename);
-     // _image = _image;
+      // _image = _image;
       _basename = basename;
       _enable = true;
     });
   }
 
   Future<void> storeFirebase() async {
-   // print(userData.getname());
+    // print(userData.getname());
 
     FocusScope.of(context).requestFocus(new FocusNode());
     check().then((internet) async {
@@ -144,16 +139,20 @@ class _FirstPageState extends State<FirstPage>
 
             print('Uploaded $_uploadUrl');
 
-            await _firestore.collection('events').add({
+            var x = await _firestore.collection('events').add({
               'title': taskTitleInputController.text,
-              //'from': widget.googleSignIn.currentUser.email,
+              'from': widget.googleSignIn.currentUser.email,
               'location': locationController.text,
               'date': DateTime.now().toIso8601String().toString(),
               'imageURL': _uploadUrl,
               'userName': googleSignIn.currentUser.displayName,
               'prflurl': googleSignIn.currentUser.photoUrl,
-              'likes':0,
+              'likes': 0,
+              'liker': [],
+              'email': widget.googleSignIn.currentUser.email,
             });
+
+            print(x);
 
             Scaffold.of(context).showSnackBar(SnackBar(
               duration: const Duration(seconds: 3),
@@ -175,11 +174,12 @@ class _FirstPageState extends State<FirstPage>
               'from': googleSignIn.currentUser.email,
               'location': locationController.text,
               'date': DateTime.now().toIso8601String().toString(),
+              'likes': 0,
               'imageURL': null,
-
+              'liker': [],
               'userName': googleSignIn.currentUser.displayName,
               'prflurl': googleSignIn.currentUser.photoUrl,
-              //'uploader': widget.googleSignIn.currentUser
+              'email': widget.googleSignIn.currentUser.email,
             });
             setState(() {
               postDisable = false;
@@ -188,7 +188,7 @@ class _FirstPageState extends State<FirstPage>
               _image = null;
             });
             print('event data obtained');
-            log('Without images');
+            //log('Without images');
             Scaffold.of(context).showSnackBar(SnackBar(
               duration: const Duration(seconds: 2),
               content: Text('Status without images'),
@@ -222,11 +222,11 @@ class _FirstPageState extends State<FirstPage>
   Widget build(BuildContext context) {
     final devHeight = MediaQuery.of(context).size.height;
     return SingleChildScrollView(
-  
+
         //padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
         child: Column(children: <Widget>[
       Container(
-        height: devHeight/10,
+        height: devHeight / 10,
         padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: TextField(
           autofocus: false,
@@ -310,7 +310,10 @@ class _FirstPageState extends State<FirstPage>
       Container(
         height: double.maxFinite,
         child: StreamBuilder<QuerySnapshot>(
-          stream: _firestore.collection('events').orderBy('date', descending:true).snapshots(),
+          stream: _firestore
+              .collection('events')
+              .orderBy('date', descending: true)
+              .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData)
               return Center(
@@ -318,7 +321,6 @@ class _FirstPageState extends State<FirstPage>
               );
 
             List<DocumentSnapshot> docs = snapshot.data.documents;
-            
 
             List<Widget> events = docs
                 .map((doc) => CardLayout1(
@@ -328,8 +330,11 @@ class _FirstPageState extends State<FirstPage>
                       title: doc.data['title'],
                       location: doc.data['location'],
                       likes: doc.data['likes'],
+                      liker: List.from(doc.data['liker']),
                       date: doc.data['date'],
                       imageURL: doc.data['imageURL'],
+                      email:doc.data['email'],
+                      currentmail: widget.googleSignIn.currentUser.email,
                     ))
                 .toList();
 

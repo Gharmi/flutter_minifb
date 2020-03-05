@@ -68,18 +68,21 @@ class _SecondPageState extends State<SecondPage> with TickerProviderStateMixin {
 
               List<DocumentSnapshot> docs = snapshot.data.documents;
 
-              List<Widget> events = docs
-                  .map((doc) => CardLayout1(
-                        id: doc.documentID,
-                        photourl: doc.data['prflurl'],
-                        displayName: doc.data['userName'],
-                        title: doc.data['title'],
-                        location: doc.data['location'],
-                        date: doc.data['date'],
-                        imageURL: doc.data['imageURL'],
-                      ))
-                  .toList();
-
+            List<Widget> events = docs
+                .map((doc) => CardLayout1(
+                      id: doc.documentID,
+                      photourl: doc.data['prflurl'],
+                      displayName: doc.data['userName'],
+                      title: doc.data['title'],
+                      location: doc.data['location'],
+                      likes: doc.data['likes'],
+                      liker: List.from(doc.data['liker']),
+                      date: doc.data['date'],
+                      imageURL: doc.data['imageURL'],
+                      email:doc.data['email'],
+                      currentmail: widget.googleSignIn.currentUser.email,
+                    ))
+                .toList();
               return Scrollbar(child:ListView(
             
                 //reverse: true,
