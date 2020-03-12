@@ -30,12 +30,12 @@ class _SecondPageState extends State<SecondPage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 3000),
       vsync: this,
     )..repeat();
-    
 
-        controller =     AnimationController(duration: Duration(seconds: 2), vsync: this);
-      // fabButtonanim = Tween(begin: 1.0, end: -0.0008).animate(CurvedAnimation(
-      //     curve: Interval(0.8, 1.0, curve: Curves.fastOutSlowIn),
-      //     parent: controller));
+    controller =
+        AnimationController(duration: Duration(seconds: 2), vsync: this);
+    // fabButtonanim = Tween(begin: 1.0, end: -0.0008).animate(CurvedAnimation(
+    //     curve: Interval(0.8, 1.0, curve: Curves.fastOutSlowIn),
+    //     parent: controller));
   }
 
   @override
@@ -44,56 +44,38 @@ class _SecondPageState extends State<SecondPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-   
-  
-  
-       return Container(
-      
-          child: StreamBuilder<QuerySnapshot>(
-            stream: _firestore
-                .collection('events')
-                .where('userName',
-                    isEqualTo: googleSignIn.currentUser.displayName)
-                .orderBy('date', descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData)
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
+    return Container(
+      child: StreamBuilder<QuerySnapshot>(
+        stream: _firestore
+            .collection('events')
+            .where('userName', isEqualTo: googleSignIn.currentUser.displayName)
+            .orderBy('date', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData)
+            return Center(
+              child: CircularProgressIndicator(),
+            );
 
-              List<DocumentSnapshot> docs = snapshot.data.documents;
+          List<DocumentSnapshot> docs = snapshot.data.documents;
 
-            List<Widget> events = docs
-                .map((doc) => CardLayout1(
-                      id: doc.documentID,
-                      photourl: doc.data['prflurl'],
-                      displayName: doc.data['userName'],
-                      title: doc.data['title'],
-                      location: doc.data['location'],
-                      likes: doc.data['likes'],
-                      liker: List.from(doc.data['liker']),
-                      date: doc.data['date'],
-                      imageURL: doc.data['imageURL'],
-                      email:doc.data['email'],
-                      currentmail: widget.googleSignIn.currentUser.email,
-                    ))
-                .toList();
-              return Scrollbar(child:ListView(
-            
-                //reverse: true,
-                children: <Widget>[
-                  ...events,
-                ],
-              ));
-            },
-          ),
-        
-      
+          List<Widget> events = docs
+              .map((doc) => CardLayout1(
+                    doc: doc,
+                    currentmail: widget.googleSignIn.currentUser.email,
+                  ))
+              .toList();
+          return Scrollbar(
+              child: ListView(
+            //reverse: true,
+            children: <Widget>[
+              ...events,
+            ],
+          ));
+        },
+      ),
     );
   }
 }

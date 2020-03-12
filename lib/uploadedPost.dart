@@ -4,7 +4,8 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_handler/card.dart';
-import 'package:firebase_handler/models/user.dart';
+import 'package:firebase_handler/models/StoreStatus.dart';
+
 import 'package:firebase_handler/other.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -13,14 +14,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:random_string/random_string.dart';
-import 'dart:math' show Random;
+//import 'dart:math' show Random;
 
 import 'other.dart';
-import 'main.dart';
+
 
 class FirstPage extends StatefulWidget {
   final GoogleSignIn googleSignIn;
-  UserData userData;
+  
   FirstPage({Key key, @required this.googleSignIn});
 
   @override
@@ -30,11 +31,10 @@ class FirstPage extends StatefulWidget {
 
 class _FirstPageState extends State<FirstPage>
     with SingleTickerProviderStateMixin {
+
   //we can also access googleSign by constructor and by widgets too... as below
   final GoogleSignIn googleSignIn;
-  //_FirstPageState({this.googleSignIn});
 
-  //final UserData userData;
 
   _FirstPageState({this.googleSignIn});
 
@@ -47,7 +47,7 @@ class _FirstPageState extends State<FirstPage>
   TextEditingController taskTitleInputController = TextEditingController();
   TextEditingController locationController = new TextEditingController();
   ScrollController scrollController = ScrollController();
-  //bool starCheck = true;
+
   bool postDisable = false;
 
   //Animation fabButtonanim;
@@ -85,14 +85,14 @@ class _FirstPageState extends State<FirstPage>
 
     setState(() {
       print(basename);
-      // _image = _image;
+
       _basename = basename;
       _enable = true;
     });
   }
 
   Future<void> storeFirebase() async {
-    // print(userData.getname());
+
 
     FocusScope.of(context).requestFocus(new FocusNode());
     check().then((internet) async {
@@ -139,48 +139,55 @@ class _FirstPageState extends State<FirstPage>
 
             print('Uploaded $_uploadUrl');
 
-            var x = await _firestore.collection('events').add({
-              'title': taskTitleInputController.text,
-              'from': widget.googleSignIn.currentUser.email,
-              'location': locationController.text,
-              'date': DateTime.now().toIso8601String().toString(),
-              'imageURL': _uploadUrl,
-              'userName': googleSignIn.currentUser.displayName,
-              'prflurl': googleSignIn.currentUser.photoUrl,
-              'likes': 0,
-              'liker': [],
-              'email': widget.googleSignIn.currentUser.email,
+            StoreStatus st = StoreStatus(
+                taskTitleInputController.text,
+                locationController.text,
+                DateTime.now().toIso8601String().toString(),
+                0,
+                _uploadUrl,
+                [],
+                googleSignIn.currentUser.displayName,
+                googleSignIn.currentUser.photoUrl,
+                widget.googleSignIn.currentUser.email);
+
+            await _firestore
+                .collection('events')
+                .document()
+                .setData(st.toMap())
+                .whenComplete(() {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                duration: const Duration(seconds: 3),
+                content: Text('Status Updated with image'),
+              ));
+              taskTitleInputController.clear();
+              locationController.clear();
+              setState(() {
+                postDisable = false;
+                _enable = false;
+                _basename = null;
+                _image = null;
+                //_uploadUrl = '';
+              });
             });
 
-            print(x);
-
-            Scaffold.of(context).showSnackBar(SnackBar(
-              duration: const Duration(seconds: 3),
-              content: Text('Status Updated with image'),
-            ));
-            taskTitleInputController.clear();
-            locationController.clear();
-            setState(() {
-              postDisable = false;
-              _enable = false;
-              _basename = null;
-              _image = null;
-              //_uploadUrl = '';
-            });
           } else {
             print('events data');
-            await _firestore.collection('events').add({
-              'title': taskTitleInputController.text,
-              'from': googleSignIn.currentUser.email,
-              'location': locationController.text,
-              'date': DateTime.now().toIso8601String().toString(),
-              'likes': 0,
-              'imageURL': null,
-              'liker': [],
-              'userName': googleSignIn.currentUser.displayName,
-              'prflurl': googleSignIn.currentUser.photoUrl,
-              'email': widget.googleSignIn.currentUser.email,
-            });
+
+            StoreStatus st = StoreStatus(
+                taskTitleInputController.text,
+                locationController.text,
+                DateTime.now().toIso8601String().toString(),
+                0,
+                null,
+                [],
+                googleSignIn.currentUser.displayName,
+                googleSignIn.currentUser.photoUrl,
+                widget.googleSignIn.currentUser.email);
+            await _firestore
+                .collection('events')
+                .document()
+                .setData(st.toMap());
+
             setState(() {
               postDisable = false;
               _enable = false;
@@ -324,19 +331,13 @@ class _FirstPageState extends State<FirstPage>
 
             List<Widget> events = docs
                 .map((doc) => CardLayout1(
-                      id: doc.documentID,
-                      photourl: doc.data['prflurl'],
-                      displayName: doc.data['userName'],
-                      title: doc.data['title'],
-                      location: doc.data['location'],
-                      likes: doc.data['likes'],
-                      liker: List.from(doc.data['liker']),
-                      date: doc.data['date'],
-                      imageURL: doc.data['imageURL'],
-                      email:doc.data['email'],
+                       doc:doc,
                       currentmail: widget.googleSignIn.currentUser.email,
                     ))
                 .toList();
+
+                            
+
 
             return ListView(
               controller: scrollController,

@@ -5,46 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CardLayout1 extends StatefulWidget {
-  final String photourl,
-      displayName,
-      title,
-      location,
-      imageURL,
-      id,
-      email,
-      date;
+  // final String photourl,
+  //     displayName,
+  //     title,
+  //     location,
+  //     imageURL,
+  //     id,
+  //     email,
+  //     date;
 
-  final int likes;
-  final List<String> liker;
+  // final int likes;
+  // final List<String> liker;
   final String currentmail;
+  final doc;
 
-  const CardLayout1(
-      {Key key,
-      this.id,
-      this.photourl,
-      this.displayName,
-      this.title,
-      this.location,
-      this.date,
-      this.imageURL,
-      this.likes,
-      this.liker,
-      this.email,
-      this.currentmail})
-      : super(key: key);
+  const CardLayout1({Key key, this.doc, this.currentmail}) : super(key: key);
 
   @override
-  _CardLayout1State createState() => _CardLayout1State(
-      id: id,
-      photourl: photourl,
-      displayName: displayName,
-      title: title,
-      location: location,
-      date: date,
-      imageURL: imageURL,
-      likes: likes,
-      liker: liker,
-      email: email);
+  _CardLayout1State createState() =>
+      _CardLayout1State(doc: doc, currentmail: currentmail);
 }
 
 class _CardLayout1State extends State<CardLayout1>
@@ -53,32 +32,26 @@ class _CardLayout1State extends State<CardLayout1>
   int commentCount = 0;
   bool commentCheck = false;
 
-  final String photourl,
-      displayName,
-      title,
-      location,
-      imageURL,
-      id,
-      email,
-      currentmail;
+  // final String photourl,
+  //     displayName,
+  //     title,
+  //     location,
+  //     imageURL,
+  //     id,
+  //     email,
+  //     currentmail;
 
-  final String date;
-  final int likes;
-  final List liker;
+  // final String date;
+  // final int likes;
+  // final List liker;
   bool starCheck;
   int starCount;
 
+  final currentmail;
+  final doc;
+
   _CardLayout1State({
-    this.id,
-    this.photourl,
-    this.displayName,
-    this.title,
-    this.location,
-    this.date,
-    this.imageURL,
-    this.likes,
-    this.liker,
-    this.email,
+    this.doc,
     this.currentmail,
   });
 
@@ -101,15 +74,14 @@ class _CardLayout1State extends State<CardLayout1>
     return starCheck1;
   }
 
-
-
   @override
   void initState() {
-    // starCheck = false;
-  
+   
+
     // starCount = widget.likes;
     print(widget.currentmail);
     print(starCheck);
+    print('isitnull');
 
     super.initState();
 
@@ -129,8 +101,8 @@ class _CardLayout1State extends State<CardLayout1>
     // });
     //_breathingController.forward();
 
-    _angleController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 1000));
+    _angleController = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 1000));
     _angleController.addListener(() {
       setState(() {
         _angle = _angleController.value * 360 / 360 * 2 * pi;
@@ -243,8 +215,8 @@ class _CardLayout1State extends State<CardLayout1>
   @override
   Widget build(BuildContext context) {
     // final size = 21.0 - 10.0 * _breathe;
-    starCheck = starCheckFunc(widget.liker, widget.currentmail);
-    starCount=widget.likes;
+    starCheck = starCheckFunc(List.from(widget.doc.data['liker']), widget.currentmail);
+    starCount = widget.doc.data['likes'];
     return Card(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0))),
@@ -261,7 +233,8 @@ class _CardLayout1State extends State<CardLayout1>
                     padding: EdgeInsets.fromLTRB(3.0, 3.0, 3.0, 3.0),
                     child: new CircleAvatar(
                       radius: 30.0,
-                      child: ClipOval(child: Image.network(widget.photourl)),
+                      child: ClipOval(
+                          child: Image.network(widget.doc.data['prflurl'])),
                       backgroundColor: Colors.transparent,
                     )),
                 Container(
@@ -272,7 +245,7 @@ class _CardLayout1State extends State<CardLayout1>
                         Row(
                           children: <Widget>[
                             Text(
-                              widget.displayName.toUpperCase(),
+                              widget.doc.data['userName'].toUpperCase(),
                               textAlign: TextAlign.start,
                               style: TextStyle(
                                 color: Colors.black,
@@ -280,8 +253,8 @@ class _CardLayout1State extends State<CardLayout1>
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                                Text(
-                              ' updated a status',
+                            Text(
+                              ' updated a status . ',
                               textAlign: TextAlign.start,
                               style: TextStyle(
                                 color: Colors.black,
@@ -289,11 +262,11 @@ class _CardLayout1State extends State<CardLayout1>
                                 fontWeight: FontWeight.normal,
                               ),
                             ),
-
                           ],
                         ),
                         Text(
-                          minFormatter(widget.date.toString().toUpperCase()),
+                          minFormatter(
+                              widget.doc.data['date'].toString().toUpperCase()),
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: 8.0,
@@ -307,7 +280,7 @@ class _CardLayout1State extends State<CardLayout1>
             Container(
               padding: EdgeInsets.fromLTRB(20, 20, 0, 5),
               child: Text(
-                widget.title,
+                widget.doc.data['title'],
                 style: TextStyle(color: Colors.black, fontSize: 18),
               ),
             ),
@@ -315,11 +288,11 @@ class _CardLayout1State extends State<CardLayout1>
               padding: EdgeInsets.fromLTRB(20, 0, 0, 10),
               child: Row(
                 children: <Widget>[
-                  widget.location == ''
+                  widget.doc.data['location'] == ''
                       ? SizedBox(height: 5)
                       : Icon(Icons.location_on, color: Colors.black87),
                   Text(
-                    widget.location,
+                    widget.doc.data['location'],
                     style: TextStyle(
                       color: Colors.black,
                       fontStyle: FontStyle.italic,
@@ -333,10 +306,10 @@ class _CardLayout1State extends State<CardLayout1>
             Center(
                 child: Container(
                     margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                    child: widget.imageURL != null
+                    child: widget.doc.data['imageURL'] != null
                         ? FadeInImage.assetNetwork(
-                            placeholder: "assets/images/loading.gif",
-                            image: widget.imageURL)
+                            placeholder: "assets/images/loading2.gif",
+                            image: doc.data['imageURL'])
                         : null)),
             Divider(thickness: 7, height: 10),
             Container(
@@ -351,7 +324,9 @@ class _CardLayout1State extends State<CardLayout1>
                               ? Text(
                                   'Be the first to twinkle this post',
                                   style: TextStyle(
-                                      fontStyle: FontStyle.italic, fontSize: 6),
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 6,
+                                      color: Colors.black),
                                 )
                               : null),
                       Container(
@@ -359,13 +334,22 @@ class _CardLayout1State extends State<CardLayout1>
                           child: starCount == 0
                               ? null
                               : starCount == 1
-                                  ? Text(starCount.toString() + ' star')
-                                  : Text(starCount.toString() + ' stars')),
+                                  ? Text(
+                                      starCount.toString() + ' star',
+                                      style: TextStyle(color: Colors.black),
+                                    )
+                                  : Text(
+                                      starCount.toString() + ' stars',
+                                      style: TextStyle(color: Colors.black),
+                                    )),
                       Container(
                         padding: EdgeInsets.fromLTRB(230, 5, 0, 0),
                         child: commentCount == 0
                             ? null
-                            : Text(commentCount.toString() + ' comments'),
+                            : Text(
+                                commentCount.toString() + ' comments',
+                                style: TextStyle(color: Colors.black),
+                              ),
                       ),
                     ],
                   ),
@@ -375,43 +359,45 @@ class _CardLayout1State extends State<CardLayout1>
                           angle: _angle,
                           child: FlatButton(
                               onPressed: () => setState(() {
+                                    starCheck=!starCheck;
                                     print('inside click check');
 
-                                    print(widget.id);
+                                    print(widget.doc.documentID);
 
-                                    if (starCheck) {
-                                      print('dislike');
+                                    if (!starCheck) {
+                                      print('dislike!!!!!!!!!!!!!!!!!!!!!!!!!!');
                                       print(widget.currentmail);
-                                      starCheck = false;
+                                     
+                                      print(starCheck);
                                       starCount = starCount - 1;
                                       _firestore
                                           .collection('events')
-                                          .document(widget.id)
-                                          .updateData({'likes': starCount});
+                                          .document(widget.doc.documentID)
+                                          .updateData({'likes': starCount});   
 
                                       _firestore
                                           .collection('events')
-                                          .document(widget.id)
+                                          .document(widget.doc.documentID)
                                           .updateData({
                                         'liker': FieldValue.arrayRemove(
                                             [widget.currentmail])
                                       });
                                       //starCheckFunc(liker);
                                     } else {
-                                      print('liked!!');
+                                      print('liked!!!!!!!!!!!!!!!!!!!!!!!!!');
 
-                                      starCheck = true;
+                               
 
                                       starCount = starCount + 1;
                                       _firestore
                                           .collection('events')
-                                          .document(widget.id)
+                                          .document(widget.doc.documentID)
                                           .updateData({
                                         'likes': FieldValue.increment(1)
                                       });
                                       _firestore
                                           .collection('events')
-                                          .document(widget.id)
+                                          .document(widget.doc.documentID)
                                           .updateData({
                                         'liker': FieldValue.arrayUnion(
                                             [widget.currentmail])
@@ -430,7 +416,6 @@ class _CardLayout1State extends State<CardLayout1>
                                 // height : size,
                                 // width: size,
                                 // decoration: BoxDecoration(
-                                 
 
                                 //     borderRadius:
                                 //         BorderRadius.all(Radius.circular(21)),
@@ -438,15 +423,17 @@ class _CardLayout1State extends State<CardLayout1>
                                 //         color: Colors.white, width: 2)),
                                 child: Icon(
                                   Icons.star,
-                                  color: starCheck ? Colors.blue : Colors.black38,
+                                  color:
+                                      starCheck ? Colors.blue : Colors.black38,
                                 ),
                               ))),
                       Text('Star'),
                       FlatButton(
                           child: Icon(
                             Icons.mode_comment,
-                            color:
-                                commentCount == 0 ? Colors.black38 : Colors.blue,
+                            color: commentCount == 0
+                                ? Colors.black38
+                                : Colors.blue,
                           ),
                           onPressed: () => setState(() {
                                 if (commentCheck == true) {

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_handler/main.dart';
 import 'package:firebase_handler/models/user.dart';
 import 'package:firebase_handler/theme_changer.dart';
@@ -5,6 +7,7 @@ import 'package:firebase_handler/uploadedPost.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:toast/toast.dart';
 import 'floatingButton.dart';
 import 'secondPage.dart';
 import 'main.dart';
@@ -22,6 +25,7 @@ class Home extends StatefulWidget {
 class HomePage extends State<Home> {
   GoogleSignIn googleSignIn;
   //final UserData userData;
+  DateTime currentBackPressTime;
 
   HomePage( {this.googleSignIn});
 
@@ -46,9 +50,48 @@ class HomePage extends State<Home> {
     }
   }
 
+  Future<bool> _onWillPop() async{
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null || 
+        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+        showToast('press back to exit app', gravity: Toast.BOTTOM);
+      return Future.value(false);
+    }
+    exit(0);
+    return Future.value(true);
+  }
+
+  void showToast(String msg, {int duration, int gravity}) {
+    Toast.show(msg, context, duration: duration, gravity: gravity);
+  }
+
+  //  Future<bool> _onWillPop() async {
+  //   return (await showDialog(
+  //         context: context,
+  //         builder: (context) => new AlertDialog(
+  //           title: new Text('Are you sure?'),
+  //           content: new Text('Do you want to exit an App'),  
+  //           actions: <Widget>[
+  //             new FlatButton(
+  //               onPressed: () => Navigator.of(context).pop(false),
+  //               child: new Text('No'),
+  //             ),
+  //             new FlatButton(
+  //               onPressed: () =>exit(0),
+  //               child: new Text('Yes'),
+  //             ),
+  //           ],
+  //         ),
+  //       )) ??
+  //       false;
+  // }
+
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return WillPopScope(
+        onWillPop:_onWillPop,
         child: new Scaffold(
       appBar: AppBar(
         title: pos==0?Text('News Feed'):Text('My Posts'),
@@ -164,7 +207,7 @@ class HomePage extends State<Home> {
                     value: false,
                     onChanged: (changedTheme) {
                       setState(() {
-                        mode==0?mode=1:mode=0;
+                       // mode==0?mode=1:mode=0;
                         changedTheme = !changedTheme;
                       });
                     },
