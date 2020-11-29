@@ -10,5 +10,5 @@ App representing News Feed, Star(similar as like in facebook).
 -Image is uploaded and received as it is compressed.
 -Anyone can give star as reaction.
 
-### NOTE, THIS APP IS JUS NOTE, THIS APP IS JUST BUILT TO LEARN. 
+### THIS APP IS JUST BUILT TO LEARN. 
 IT IS BEGINNER'S APP SO, IT'S QUITE MESSED UP(FOLDER STRUCTURE, CODES).
