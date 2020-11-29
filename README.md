@@ -1,16 +1,14 @@
-# firebase_handler
+# Sample Flutter Mobile App(Tested on Android)
 
-A new Flutter project.
+App representing News Feed, Star(similar as like in facebook).
 
-## Getting Started
+## FEATURES 
 
-This project is a starting point for a Flutter application.
+-Walkthrough and Splash screen just included.
+-Includes Google Sign In  as authentication.
+-Can Post the Status with image and status.
+-Image is uploaded and received as it is compressed.
+-Anyone can give star as reaction.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### NOTE, THIS APP IS JUS NOTE, THIS APP IS JUST BUILT TO LEARN. 
+IT IS BEGINNER'S APP SO, IT'S QUITE MESSED UP(FOLDER STRUCTURE, CODES).
